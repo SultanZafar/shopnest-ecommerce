@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Order {{ order.order_number }} — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <a href="{% url 'store:order_history' %}" class="text-sm text-forest/60 hover:text-clay">← My orders</a>
+  <div class="flex justify-between items-center mt-4 mb-6">
+    <h1 class="font-display text-2xl font-semibold">{{ order.order_number }}</h1>
+    <span class="text-xs font-bold px-3 py-1 rounded-full
+      {% if order.status == 'delivered' %} bg-forest-100 text-forest
+      {% elif order.status == 'cancelled' %} bg-red-100 text-red-600
+      {% else %} bg-clay-50 text-clay {% endif %}">
+      {{ order.get_status_display }}
+    </span>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-6 mb-8">
+    <div class="bg-cream rounded-xl p-5 text-sm">
+      <h3 class="font-semibold mb-2">Shipping to</h3>
+      <p>{{ order.full_name }}</p>
+      <p>{{ order.phone }}</p>
+      <p>{{ order.address }}, {{ order.city }}</p>
+    </div>
+    <div class="bg-cream rounded-xl p-5 text-sm">
+      <h3 class="font-semibold mb-2">Order info</h3>
+      <p>Placed: {{ order.created_at|date:"d M Y, h:i A" }}</p>
+      <p>Payment: {{ order.get_payment_method_display }}</p>
+      <p>Total: Rs {{ order.total_amount|intcomma }}</p>
+    </div>
+  </div>
+
+  <h3 class="font-semibold mb-3">Items</h3>
+  <div class="space-y-3">
+    {% for item in order.items.all %}
+    <div class="flex justify-between bg-cream rounded-lg px-4 py-3 text-sm">
+      <span>{{ item.product_name }} × {{ item.quantity }}</span>
+      <span class="font-medium">Rs {{ item.subtotal|intcomma }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

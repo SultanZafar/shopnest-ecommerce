@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+
+<section class="max-w-6xl mx-auto px-4 pt-14 pb-16 grid md:grid-cols-2 gap-10 items-center">
+  <div>
+    <span class="inline-block text-xs font-semibold tracking-widest uppercase text-clay mb-3">01 — Everyday goods, well made</span>
+    <h1 class="font-display text-5xl md:text-6xl font-semibold leading-[1.05] mb-5">Fill your home with things worth keeping.</h1>
+    <p class="text-forest/70 text-lg mb-8 max-w-md">ShopNest curates kitchenware, decor and everyday essentials from small makers — browse the shelf, add to cart, checkout in minutes.</p>
+    <div class="flex gap-3">
+      <a href="{% url 'store:product_list' %}" class="btn-primary">Browse the shelf →</a>
+      <a href="#categories" class="btn-outline">View categories</a>
+    </div>
+  </div>
+  <div class="relative">
+    <div class="shelf-line pb-6 grid grid-cols-2 gap-4">
+      {% for p in latest|slice:":4" %}
+      <div class="bg-cream rounded-xl p-4 shadow-sm">
+        {% if p.image %}<img src="{{ p.image.url }}" class="w-full h-24 object-cover rounded-lg mb-2">
+        {% else %}<div class="w-full h-24 rounded-lg mb-2 bg-sage-100 flex items-center justify-center text-3xl">{{ p.category.icon }}</div>{% endif %}
+        <p class="text-sm font-medium truncate">{{ p.name }}</p>
+        <p class="text-clay font-semibold text-sm">Rs {{ p.current_price|intcomma }}</p>
+      </div>
+      {% empty %}
+      <div class="col-span-2 text-sm text-forest/60 p-6 bg-cream rounded-xl">No products yet — add some from the admin panel.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="categories" class="max-w-6xl mx-auto px-4 pb-16">
+  <h2 class="font-display text-2xl font-semibold mb-6">Shop by category</h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {% for c in categories %}
+    <a href="{% url 'store:product_list' %}?category={{ c.slug }}" class="product-card p-5 text-center shadow-sm">
+      <div class="text-3xl mb-2">{{ c.icon }}</div>
+      <div class="font-medium text-sm">{{ c.name }}</div>
+    </a>
+    {% empty %}
+    <p class="text-sm text-forest/60 col-span-4">Categories will appear here once added in admin.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="max-w-6xl mx-auto px-4 pb-20">
+  <div class="flex items-baseline justify-between mb-6">
+    <h2 class="font-display text-2xl font-semibold">Featured picks</h2>
+    <a href="{% url 'store:product_list' %}" class="text-sm font-medium text-clay hover:underline">See all →</a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+    {% for p in featured %}
+    {% include "store/_product_card.html" with p=p %}
+    {% empty %}
+    <p class="text-sm text-forest/60 col-span-4">Mark a product "Featured" in admin to show it here.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

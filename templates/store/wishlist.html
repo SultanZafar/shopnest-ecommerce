@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}My wishlist — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10">
+  <h1 class="font-display text-3xl font-semibold mb-8">My wishlist</h1>
+  {% if items %}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+    {% for w in items %}
+    {% include "store/_product_card.html" with p=w.product %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-20 bg-cream rounded-xl">
+    <p class="text-5xl mb-4">♡</p>
+    <p class="text-forest/60 mb-5">Nothing saved yet — tap the heart on a product to add it here.</p>
+    <a href="{% url 'store:product_list' %}" class="btn-primary">Browse products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

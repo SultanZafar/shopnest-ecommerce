@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Your cart — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <h1 class="font-display text-3xl font-semibold mb-8">Your cart</h1>
+
+  {% if cart.items.all %}
+  <div class="space-y-4">
+    {% for item in cart.items.all %}
+    <div class="bg-cream rounded-xl p-4 flex items-center gap-4 shadow-sm">
+      {% if item.product.image %}
+      <img src="{{ item.product.image.url }}" class="w-20 h-20 object-cover rounded-lg">
+      {% else %}
+      <div class="w-20 h-20 rounded-lg bg-sage-100 flex items-center justify-center text-2xl">{{ item.product.category.icon }}</div>
+      {% endif %}
+      <div class="flex-1">
+        <a href="{{ item.product.get_absolute_url }}" class="font-medium hover:text-clay">{{ item.product.name }}</a>
+        <p class="text-sm text-forest/60">Rs {{ item.product.current_price|intcomma }} each</p>
+      </div>
+      <form method="post" action="{% url 'store:update_cart_item' item.id %}" class="flex items-center gap-2">
+        {% csrf_token %}
+        <button name="action" value="decrease" class="btn-outline !px-3 !py-1">−</button>
+        <span class="w-8 text-center font-medium">{{ item.quantity }}</span>
+        <button name="action" value="increase" class="btn-outline !px-3 !py-1">+</button>
+      </form>
+      <p class="font-semibold w-24 text-right">Rs {{ item.subtotal|intcomma }}</p>
+      <form method="post" action="{% url 'store:update_cart_item' item.id %}">
+        {% csrf_token %}
+        <button name="action" value="remove" class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-8 bg-cream rounded-xl p-6 shadow-sm flex justify-between items-center">
+    <div>
+      <p class="text-sm text-forest/60">{{ cart.total_items }} item{{ cart.total_items|pluralize }}</p>
+      <p class="font-display text-2xl font-semibold">Total: Rs {{ cart.total_price|intcomma }}</p>
+    </div>
+    <a href="{% url 'store:checkout' %}" class="btn-primary">Proceed to checkout →</a>
+  </div>
+  {% else %}
+  <div class="text-center py-20 bg-cream rounded-xl">
+    <p class="text-5xl mb-4">🛒</p>
+    <p class="text-forest/60 mb-5">Your cart is empty.</p>
+    <a href="{% url 'store:product_list' %}" class="btn-primary">Start shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

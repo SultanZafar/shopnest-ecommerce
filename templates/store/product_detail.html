@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ product.name }} — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10">
+  <a href="{% url 'store:product_list' %}" class="text-sm text-forest/60 hover:text-clay">← Back to shop</a>
+
+  <div class="grid md:grid-cols-2 gap-10 mt-4">
+    <div>
+      {% if product.image %}
+      <img src="{{ product.image.url }}" class="w-full h-96 object-cover rounded-2xl shadow-sm">
+      {% else %}
+      <div class="w-full h-96 rounded-2xl bg-cream flex items-center justify-center text-7xl">{{ product.category.icon }}</div>
+      {% endif %}
+      {% if product.extra_images.all %}
+      <div class="grid grid-cols-4 gap-2 mt-3">
+        {% for img in product.extra_images.all %}
+        <img src="{{ img.image.url }}" class="w-full h-20 object-cover rounded-lg">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <span class="text-xs font-semibold uppercase tracking-widest text-clay">{{ product.category.name }}</span>
+      <h1 class="font-display text-3xl font-semibold mt-2 mb-3">{{ product.name }}</h1>
+      <div class="flex items-center gap-3 mb-4 text-sm text-forest/70">
+        <span>{% if product.average_rating %}★ {{ product.average_rating }} ({{ reviews|length }} review{{ reviews|length|pluralize }}){% else %}No ratings yet{% endif %}</span>
+      </div>
+
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-3xl font-semibold font-display">Rs {{ product.current_price|intcomma }}</span>
+        {% if product.discount_price %}
+        <span class="text-lg text-forest/40 line-through">Rs {{ product.price|intcomma }}</span>
+        <span class="text-xs font-bold bg-clay text-white px-2 py-1 rounded-full">-{{ product.discount_percent }}%</span>
+        {% endif %}
+      </div>
+
+      <p class="text-forest/70 leading-relaxed mb-6">{{ product.description }}</p>
+
+      <p class="text-sm mb-5 {% if product.in_stock %}text-forest{% else %}text-red-500{% endif %}">
+        {% if product.in_stock %}✓ {{ product.stock }} in stock{% else %}✗ Out of stock{% endif %}
+      </p>
+
+      <div class="flex gap-3">
+        {% if product.in_stock %}
+        <form action="{% url 'store:add_to_cart' product.id %}" method="post" class="flex gap-2 items-center flex-1">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="input-field w-20 !py-2.5">
+          <button type="submit" class="btn-primary flex-1">Add to cart 🛒</button>
+        </form>
+        {% else %}
+        <button disabled class="btn-outline flex-1 opacity-50 cursor-not-allowed">Out of stock</button>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'store:toggle_wishlist' product.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn-outline !px-4" title="Toggle wishlist">
+            {% if in_wishlist %}♥{% else %}♡{% endif %}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <section class="mt-16 max-w-3xl">
+    <h2 class="font-display text-2xl font-semibold mb-5">Customer reviews</h2>
+
+    {% if user.is_authenticated and not user_has_reviewed %}
+    <form method="post" class="bg-cream rounded-xl p-5 mb-8 space-y-3 shadow-sm">
+      {% csrf_token %}
+      <h3 class="font-medium text-sm">Write a review</h3>
+      {{ review_form.rating }}
+      {{ review_form.comment }}
+      <button type="submit" class="btn-primary !py-2 text-sm">Submit review</button>
+    </form>
+    {% elif not user.is_authenticated %}
+    <p class="text-sm text-forest/60 mb-8"><a href="{% url 'accounts:login' %}?next={{ request.path }}" class="text-clay hover:underline">Log in</a> to write a review.</p>
+    {% endif %}
+
+    <div class="space-y-4">
+      {% for r in reviews %}
+      <div class="border-b border-forest/10 pb-4">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-medium text-sm">{{ r.user.username }}</span>
+          <span class="text-clay text-sm">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+        </div>
+        <p class="text-sm text-forest/70">{{ r.comment }}</p>
+        <p class="text-xs text-forest/40 mt-1">{{ r.created_at|naturaltime }}</p>
+      </div>
+      {% empty %}
+      <p class="text-sm text-forest/60">No reviews yet — be the first to share your thoughts.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if related %}
+  <section class="mt-16">
+    <h2 class="font-display text-2xl font-semibold mb-5">You may also like</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      {% for p in related %}
+      {% include "store/_product_card.html" with p=p %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% load humanize %}
+<div class="product-card shadow-sm overflow-hidden">
+  <a href="{{ p.get_absolute_url }}">
+    {% if p.image %}
+      <img src="{{ p.image.url }}" class="w-full h-40 object-cover">
+    {% else %}
+      <div class="w-full h-40 bg-sage-100 flex items-center justify-center text-4xl">{{ p.category.icon }}</div>
+    {% endif %}
+  </a>
+  <div class="p-4">
+    {% if p.discount_percent %}
+    <span class="inline-block text-[10px] font-bold bg-clay text-white px-2 py-0.5 rounded-full mb-2">-{{ p.discount_percent }}%</span>
+    {% endif %}
+    <a href="{{ p.get_absolute_url }}" class="block font-medium text-sm mb-1 truncate hover:text-clay">{{ p.name }}</a>
+    <div class="flex items-center gap-2 mb-2">
+      <span class="font-semibold text-forest">Rs {{ p.current_price|intcomma }}</span>
+      {% if p.discount_price %}<span class="text-xs text-forest/40 line-through">Rs {{ p.price|intcomma }}</span>{% endif %}
+    </div>
+    <div class="text-xs text-forest/60 mb-3">
+      {% if p.average_rating %}★ {{ p.average_rating }}{% else %}No ratings yet{% endif %}
+      · {% if p.in_stock %}<span class="text-forest">In stock</span>{% else %}<span class="text-red-500">Out of stock</span>{% endif %}
+    </div>
+    {% if p.in_stock %}
+    <form action="{% url 'store:add_to_cart' p.id %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button type="submit" class="w-full btn-primary !py-2 text-xs">Add to cart</button>
+    </form>
+    {% else %}
+    <button disabled class="w-full btn-outline !py-2 text-xs opacity-50 cursor-not-allowed">Out of stock</button>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Create account — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16">
+  <div class="bg-cream rounded-2xl p-8 shadow-sm">
+    <h1 class="font-display text-2xl font-semibold mb-1">Create your account</h1>
+    <p class="text-sm text-forest/60 mb-6">Join ShopNest to track orders and save favorites.</p>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="text-sm font-medium block mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-xs text-red-500 mt-1">{{ field.errors.0 }}</p>{% endif %}
+        {% if field.help_text %}<p class="text-xs text-forest/40 mt-1">{{ field.help_text|safe }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-primary w-full !py-3">Create account</button>
+    </form>
+    <p class="text-sm text-center mt-5 text-forest/60">Already have an account? <a href="{% url 'accounts:login' %}" class="text-clay font-medium hover:underline">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

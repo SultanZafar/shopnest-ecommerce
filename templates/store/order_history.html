@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}My orders — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <h1 class="font-display text-3xl font-semibold mb-8">My orders</h1>
+
+  {% if orders %}
+  <div class="space-y-4">
+    {% for order in orders %}
+    <a href="{% url 'store:order_detail' order.order_number %}" class="block bg-cream rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex justify-between items-center mb-2">
+        <span class="font-semibold">{{ order.order_number }}</span>
+        <span class="text-xs font-bold px-3 py-1 rounded-full
+          {% if order.status == 'delivered' %} bg-forest-100 text-forest
+          {% elif order.status == 'cancelled' %} bg-red-100 text-red-600
+          {% else %} bg-clay-50 text-clay {% endif %}">
+          {{ order.get_status_display }}
+        </span>
+      </div>
+      <p class="text-sm text-forest/60">{{ order.items.count }} item{{ order.items.count|pluralize }} · Rs {{ order.total_amount|intcomma }} · {{ order.created_at|date:"d M Y" }}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-20 bg-cream rounded-xl">
+    <p class="text-forest/60 mb-5">You haven't placed any orders yet.</p>
+    <a href="{% url 'store:product_list' %}" class="btn-primary">Start shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

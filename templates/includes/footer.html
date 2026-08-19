@@ -1,0 +1,23 @@
+<footer class="bg-forest text-cream/80 mt-20">
+  <div class="max-w-6xl mx-auto px-4 py-10 grid sm:grid-cols-3 gap-8">
+    <div>
+      <div class="font-display text-xl text-cream mb-2">Shop<span class="text-clay">Nest</span></div>
+      <p class="text-sm leading-relaxed">A small-batch marketplace for kitchen, home &amp; everyday goods — built as a Django final year project.</p>
+    </div>
+    <div>
+      <h4 class="text-cream font-semibold mb-2 text-sm uppercase tracking-wide">Shop</h4>
+      <ul class="text-sm space-y-1">
+        <li><a href="{% url 'store:product_list' %}" class="hover:text-clay">All products</a></li>
+        <li><a href="{% url 'store:wishlist' %}" class="hover:text-clay">Wishlist</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-cream font-semibold mb-2 text-sm uppercase tracking-wide">Account</h4>
+      <ul class="text-sm space-y-1">
+        <li><a href="{% url 'store:order_history' %}" class="hover:text-clay">My orders</a></li>
+        <li><a href="{% url 'accounts:profile' %}" class="hover:text-clay">Profile</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-cream/10 text-center text-xs py-4">© {% now "Y" %} ShopNest — Django E-Commerce FYP Demo</div>
+</footer>

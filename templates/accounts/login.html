@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Log in — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16">
+  <div class="bg-cream rounded-2xl p-8 shadow-sm">
+    <h1 class="font-display text-2xl font-semibold mb-1">Welcome back</h1>
+    <p class="text-sm text-forest/60 mb-6">Log in to continue shopping.</p>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="text-sm font-medium block mb-1">Username</label>
+        <input type="text" name="username" class="input-field" autofocus required>
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1">Password</label>
+        <input type="password" name="password" class="input-field" required>
+      </div>
+      <button type="submit" class="btn-primary w-full !py-3">Log in</button>
+    </form>
+    <p class="text-sm text-center mt-5 text-forest/60">New to ShopNest? <a href="{% url 'accounts:register' %}" class="text-clay font-medium hover:underline">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

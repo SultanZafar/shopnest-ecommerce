@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Checkout — ShopNest{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+  <h1 class="font-display text-3xl font-semibold mb-8">Checkout</h1>
+  <div class="grid md:grid-cols-5 gap-8">
+    <form method="post" class="md:col-span-3 bg-cream rounded-xl p-6 space-y-4 shadow-sm">
+      {% csrf_token %}
+      <h2 class="font-semibold text-lg mb-2">Shipping details</h2>
+      <div>
+        <label class="text-sm font-medium block mb-1">Full name</label>
+        {{ form.full_name }}
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1">Phone number</label>
+        {{ form.phone }}
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1">Address</label>
+        {{ form.address }}
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1">City</label>
+        {{ form.city }}
+      </div>
+      <div>
+        <label class="text-sm font-medium block mb-1">Payment method</label>
+        {{ form.payment_method }}
+      </div>
+      <button type="submit" class="btn-primary w-full !py-3 mt-2">Place order — Rs {{ cart.total_price|intcomma }}</button>
+    </form>
+
+    <div class="md:col-span-2">
+      <div class="bg-cream rounded-xl p-6 shadow-sm">
+        <h2 class="font-semibold text-lg mb-4">Order summary</h2>
+        <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
+          {% for item in cart.items.all %}
+          <div class="flex justify-between text-sm">
+            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+            <span class="font-medium">Rs {{ item.subtotal|intcomma }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="border-t border-forest/10 mt-4 pt-4 flex justify-between font-semibold">
+          <span>Total</span>
+          <span>Rs {{ cart.total_price|intcomma }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
